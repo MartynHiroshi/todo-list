@@ -20,7 +20,12 @@ body {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  width: 512px;
+  width: 100%;
+  max-width: 512px;
+  min-width: 240px;
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
 }
 
 /* Main container for current tasks and completed tasks */
