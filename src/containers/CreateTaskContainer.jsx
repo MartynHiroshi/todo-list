@@ -21,21 +21,19 @@ function TaskForm({ taskList, setTaskList }) {
     <form
       action=""
       className="task-form"
-      onSubmit={(event) =>
-        handleSubmit(
-          event,
-          taskTitle,
-          taskPriority,
-          taskDeadline,
-          id,
-          setId,
-          taskList,
-          setTaskList,
-          setTaskTitle,
-          setTaskPriority,
-          setTaskDeadline
-        )
-      }
+      onSubmit={(event) => {
+        event.preventDefault();
+        const currentId = getAndIncrementId(id, setId);
+
+        setTaskList([
+          ...taskList,
+          { title: `#${currentId} ${taskTitle.trim()}`, priority: taskPriority, deadline: taskDeadline, id: currentId, isCompleted: false },
+        ]);
+
+        setTaskTitle("");
+        setTaskPriority("low");
+        setTaskDeadline("");
+      }}
     >
       <label htmlFor="taskName">Название задачи</label>
       <input
@@ -68,33 +66,6 @@ function TaskForm({ taskList, setTaskList }) {
       <button type="submit">Добавить задачу</button>
     </form>
   );
-}
-
-function handleSubmit(
-  event,
-  taskTitle,
-  taskPriority,
-  taskDeadline,
-  id,
-  setId,
-  taskList,
-  setTaskList,
-  setTaskTitle,
-  setTaskPriority,
-  setTaskDeadline
-) {
-  // предотвращает перезагрузку страницы браузера при отправке
-  event.preventDefault();
-  const currentId = getAndIncrementId(id, setId);
-
-  setTaskList([
-    ...taskList,
-    { title: `#${currentId} ${taskTitle.trim()}`, priority: taskPriority, deadline: taskDeadline, id: currentId, isCompleted: false },
-  ]);
-
-  setTaskTitle("");
-  setTaskPriority("low");
-  setTaskDeadline("");
 }
 
 function getAndIncrementId(id, setId) {
