@@ -10,14 +10,15 @@ export default function App() {
     completedSection: false,
   });
   const [taskList, setTaskList] = useState([]);
+  let containerId = 0;
 
   const containers = [CreateTaskContainer, OpenedTaskContainer, CompletedTaskContainer];
 
   return (
     <div className="app">
-      {containers.map((Component, index) => (
+      {containers.map((Component) => (
         <Component
-          key={index}
+          key={containerId++}
           isOpened={isOpened}
           setIsCollapsed={setIsCollapsed}
           taskList={taskList}
