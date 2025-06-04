@@ -18,7 +18,7 @@ export default function OpenedTaskContainer({ isOpened, setIsCollapsed, taskList
 
   function sortById(currentDirection) {
     setTaskList((prev) =>
-      prev.sort((a, b) => {
+      [...prev].sort((a, b) => {
         return currentDirection === "asc" ? a.id - b.id : b.id - a.id;
       })
     );
@@ -26,7 +26,7 @@ export default function OpenedTaskContainer({ isOpened, setIsCollapsed, taskList
 
   function sortByDate(currentDirection) {
     setTaskList((prev) =>
-      prev.sort((a, b) => {
+      [...prev].sort((a, b) => {
         return currentDirection === "asc" ? new Date(a.deadline) - new Date(b.deadline) : new Date(b.deadline) - new Date(a.deadline);
       })
     );
@@ -36,7 +36,7 @@ export default function OpenedTaskContainer({ isOpened, setIsCollapsed, taskList
     const priorityOrder = { low: 1, medium: 2, high: 3 };
 
     setTaskList((prev) =>
-      prev.sort((a, b) => {
+      [...prev].sort((a, b) => {
         return currentDirection === "asc"
           ? priorityOrder[a.priority] - priorityOrder[b.priority]
           : priorityOrder[b.priority] - priorityOrder[a.priority];
