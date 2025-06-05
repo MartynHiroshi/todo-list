@@ -29,6 +29,8 @@ body {
 }
 
 /* Main container for current tasks and completed tasks */
+/* зачем два одинаковых класса если отличия нет */
+/* сделать фиксированную ширину что бы не меняли размер при отсутствии задач ширина меньше чем с тасками */
 .task-container,
 .completed-task-container {
   position: relative;
@@ -43,6 +45,7 @@ h1,
 h2 {
   text-align: center;
   color: #2c3e50;
+  /* заголовкам не надо добавлять отступы, делай это снаружи, иначе страдает переиспользуемость */
   margin-bottom: 16px;
 }
 

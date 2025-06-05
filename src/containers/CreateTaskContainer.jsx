@@ -1,21 +1,40 @@
 import { useState } from "react";
+import CustomSelect from "../components/customSelect";
 import CollapseButton from "../elements/CollapseButton";
 
-export default function CreateTaskContainer({ isOpened, setIsCollapsed, taskList, setTaskList }) {
+export default function CreateTaskContainer({ taskList, setTaskList }) {
+  const [isOpened, setIsCollapsed] = useState(!false);
   return (
     <div className="task-container">
       <h1>Создание задачи</h1>
-      <CollapseButton isOpened={isOpened} setIsCollapsed={setIsCollapsed} sectionName="createSection" />
-      {isOpened["createSection"] && <TaskForm taskList={taskList} setTaskList={setTaskList} />}
+      <CollapseButton isOpened={isOpened} onClick={() => setIsCollapsed((prev) => !prev)} />
+      {isOpened && <TaskForm taskList={taskList} setTaskList={setTaskList} />}
     </div>
   );
 }
 
 function TaskForm({ taskList, setTaskList }) {
-  const [taskTitle, setTaskTitle] = useState("");
-  const [taskPriority, setTaskPriority] = useState("low");
-  const [taskDeadline, setTaskDeadline] = useState("");
-  const [id, setId] = useState(0);
+  // Очевидно что лучше делать объект нежели состояние на каждый ключ сущности
+  const [task, setTask] = useState({
+    title: "",
+    priority: "low",
+    deadline: "",
+    id: Date.now(),
+  });
+  const priorityOptions = [
+    {
+      value: "low",
+      label: "Низкий",
+    },
+    {
+      value: "medium",
+      label: "Средний",
+    },
+    {
+      value: "high",
+      label: "Высокий",
+    },
+  ];
 
   return (
     <form
@@ -23,52 +42,41 @@ function TaskForm({ taskList, setTaskList }) {
       className="task-form"
       onSubmit={(event) => {
         event.preventDefault();
-        const currentId = getAndIncrementId(id, setId);
+        // пределывать к title #{id} странно потому что ты меняешь title который написал юзер
 
-        setTaskList([
-          ...taskList,
-          { title: `#${currentId} ${taskTitle.trim()}`, priority: taskPriority, deadline: taskDeadline, id: currentId, isCompleted: false },
-        ]);
-
-        setTaskTitle("");
-        setTaskPriority("low");
-        setTaskDeadline("");
-      }}
-    >
+        setTaskList([...taskList, task]);
+        setTask({
+          title: "",
+          priority: "low",
+          deadline: "",
+          id: Date.now(),
+        });
+      }}>
       <label htmlFor="taskName">Название задачи</label>
       <input
-        value={taskTitle}
+        value={task.title}
         name="taskName"
         type="text"
         placeholder="Task title"
         required
-        onChange={(event) => setTaskTitle(event.target.value)}
-      ></input>
+        onChange={(event) => setTask({ ...task, title: event.target.value })}></input>
 
       <label htmlFor="priority">Приоритетность задачи</label>
-      <select value={taskPriority} name="priority" id="priority" onChange={(event) => setTaskPriority(event.target.value)}>
-        <option value="low" selected>
-          Низкий
-        </option>
-        <option value="medium">Средний</option>
-        <option value="high">Высокий</option>
-      </select>
+      <CustomSelect
+        options={priorityOptions}
+        value={task.priority}
+        onChange={(event) => setTask({ ...task, priority: event.target.value })}
+      />
 
       <label htmlFor="executionDate">Дата выполнения</label>
       <input
-        value={taskDeadline}
+        value={task.deadline}
         name="executionDate"
         type="datetime-local"
         required
-        onChange={(event) => setTaskDeadline(event.target.value)}
-      ></input>
+        onChange={(event) => setTask({ ...task, deadline: event.target.value })}></input>
 
       <button type="submit">Добавить задачу</button>
     </form>
   );
-}
-
-function getAndIncrementId(id, setId) {
-  setId((prev) => prev + 1);
-  return id + 1;
 }
