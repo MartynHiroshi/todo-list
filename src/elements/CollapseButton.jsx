@@ -1,7 +1,7 @@
-export default function CollapseButton({ isOpened, setIsCollapsed, sectionName }) {
+export default function CollapseButton({ isOpened, onClick }) {
   return (
-    <button className="close-button" onClick={() => setIsCollapsed((prev) => ({ ...prev, [sectionName]: !prev[sectionName] }))}>
-      {isOpened[sectionName] ? "+" : "\u00D7"}
+    <button className="close-button" onClick={onClick}>
+      {isOpened ? "▲" : "▼"}
     </button>
   );
 }

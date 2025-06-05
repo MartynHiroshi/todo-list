@@ -1,12 +1,14 @@
 import { useState } from "react";
 import CollapseButton from "../elements/CollapseButton";
 
-export default function CreateTaskContainer({ isOpened, setIsCollapsed, taskList, setTaskList }) {
+export default function CreateTaskContainer({ taskList, setTaskList }) {
+  const [isOpened, setIsOpened] = useState(true);
+
   return (
     <div className="task-container">
       <h1>Создание задачи</h1>
-      <CollapseButton isOpened={isOpened} setIsCollapsed={setIsCollapsed} sectionName="createSection" />
-      {isOpened["createSection"] && <TaskForm taskList={taskList} setTaskList={setTaskList} />}
+      <CollapseButton isOpened={isOpened} onClick={() => setIsOpened((prev) => !prev)} />
+      {isOpened && <TaskForm taskList={taskList} setTaskList={setTaskList} />}
     </div>
   );
 }
