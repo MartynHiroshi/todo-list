@@ -1,86 +1,99 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import CustomSelect from "../components/customSelect";
 import CollapseButton from "../elements/CollapseButton";
 import Task from "../elements/Task";
 
-export default function OpenedTaskContainer({ isOpened, setIsCollapsed, taskList, setTaskList }) {
+function sortById(currentDirection, setTaskList) {
+  setTaskList((prev) =>
+    [...prev].sort((a, b) => {
+      return currentDirection === "asc" ? a.id - b.id : b.id - a.id;
+    })
+  );
+}
+
+function sortByDate(currentDirection, setTaskList) {
+  setTaskList((prev) =>
+    [...prev].sort((a, b) => {
+      return currentDirection === "asc"
+        ? new Date(a.deadline) - new Date(b.deadline)
+        : new Date(b.deadline) - new Date(a.deadline);
+    })
+  );
+}
+
+function sortByPriority(currentDirection, setTaskList) {
+  const priorityOrder = { low: 1, medium: 2, high: 3 };
+
+  setTaskList((prev) =>
+    [...prev].sort((a, b) => {
+      return currentDirection === "asc"
+        ? priorityOrder[a.priority] - priorityOrder[b.priority]
+        : priorityOrder[b.priority] - priorityOrder[a.priority];
+    })
+  );
+}
+
+const sortOptions = [
+  { value: "id", label: "По номеру задачи" },
+  { value: "date", label: "По дате" },
+  { value: "priority", label: "По приоритетности" },
+];
+const sortDirectionOptions = [
+  { value: "asc", label: "↑" },
+  { value: "desc", label: "↓" },
+];
+
+export default function OpenedTaskContainer({ taskList, setTaskList }) {
+  const [isOpened, setIsCollapsed] = useState(!false);
   const [sortType, setSortType] = useState("id");
   const [sortDirection, setSortDirection] = useState("asc");
 
-  function handleSortChange(currentType, currentDirection) {
-    const sortFunctions = {
-      id: sortById,
-      date: sortByDate,
-      priority: sortByPriority,
-    };
-    // вместо свича можно сделать объект и вызывать на его поля () получая такую функцию
-    sortFunctions[currentType]?.(currentDirection);
-  }
+  const handleSortChange = useCallback(
+    (currentType, currentDirection) => {
+      // функции сортировки лучше вынести из компонента так как они не нужны пока на них не тыкнешь да и они не зависимы от компонента
+      const sortFunctions = {
+        id: sortById,
+        date: sortByDate,
+        priority: sortByPriority,
+      };
+      sortFunctions[currentType]?.(currentDirection, setTaskList);
+    },
+    // сюда кладем лист что бы при добавлении задачи она  встала в необходимое место при выбранном типе сортировки а не упала в конец
+    [setTaskList]
+  );
 
-  function sortById(currentDirection) {
-    setTaskList((prev) =>
-      [...prev].sort((a, b) => {
-        return currentDirection === "asc" ? a.id - b.id : b.id - a.id;
-      })
-    );
-  }
-
-  function sortByDate(currentDirection) {
-    setTaskList((prev) =>
-      [...prev].sort((a, b) => {
-        return currentDirection === "asc" ? new Date(a.deadline) - new Date(b.deadline) : new Date(b.deadline) - new Date(a.deadline);
-      })
-    );
-  }
-
-  function sortByPriority(currentDirection) {
-    const priorityOrder = { low: 1, medium: 2, high: 3 };
-
-    setTaskList((prev) =>
-      [...prev].sort((a, b) => {
-        return currentDirection === "asc"
-          ? priorityOrder[a.priority] - priorityOrder[b.priority]
-          : priorityOrder[b.priority] - priorityOrder[a.priority];
-      })
-    );
-  }
+  useEffect(() => {
+    handleSortChange(sortType, sortDirection);
+  }, [sortType, sortDirection, handleSortChange]);
 
   return (
     <div className="task-container">
       <h2>Список задач</h2>
-      <CollapseButton isOpened={isOpened} setIsCollapsed={setIsCollapsed} sectionName="openedSection" />
-      {isOpened["openedSection"] && (
+      <CollapseButton isOpened={isOpened} onClick={() => setIsCollapsed((prev) => !prev)} />
+      {isOpened && (
         <>
           <div className="sort-controls">
-            <select
-              className="sort-button"
+            {/* кастомный селект так как он постоянно переиспользуется */}
+            {/* обрати внимание что он больше при изменение не дергает сортировку а только отвечает за изменение значения */}
+            {/* а вот выше в коде useEffect следит за переменными и уже он дергает сортировку */}
+            <CustomSelect
+              options={sortOptions}
               value={sortType}
-              name="sortType"
-              id="sortType"
+              className="sort-button"
               onChange={(event) => {
                 const newType = event.target.value;
                 setSortType(newType);
-                handleSortChange(newType, sortDirection);
               }}
-            >
-              <option value="date">По дате</option>
-              <option value="priority">По приоритетности</option>
-              <option value="id">По номеру задачи</option>
-            </select>
-
-            <select
-              className="sort-button"
+            />
+            <CustomSelect
+              options={sortDirectionOptions}
               value={sortDirection}
-              name="sortDirection"
-              id="sortDirection"
+              className="sort-button"
               onChange={(event) => {
                 const newDirection = event.target.value;
                 setSortDirection(newDirection);
-                handleSortChange(sortType, newDirection);
               }}
-            >
-              <option value="asc">&uarr;</option>
-              <option value="desc">&darr;</option>
-            </select>
+            />
           </div>
           <ul className="task-list">
             {taskList

@@ -1,12 +1,15 @@
+import { useState } from "react";
 import CollapseButton from "../elements/CollapseButton";
 import Task from "../elements/Task";
 
-export default function CompletedTaskContainer({ isOpened, setIsCollapsed, taskList, setTaskList }) {
+export default function CompletedTaskContainer({ taskList, setTaskList }) {
+  const [isOpened, setIsCollapsed] = useState(!false);
+
   return (
     <div className="completed-task-container">
       <h2>Завершенные задачи</h2>
-      <CollapseButton isOpened={isOpened} setIsCollapsed={setIsCollapsed} sectionName="completedSection" />
-      {isOpened["completedSection"] && (
+      <CollapseButton isOpened={isOpened} onClick={() => setIsCollapsed((prev) => !prev)} />
+      {isOpened && (
         <ul className="task-list">
           {taskList
             .filter((task) => task.isCompleted)
