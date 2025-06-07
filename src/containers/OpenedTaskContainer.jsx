@@ -18,6 +18,32 @@ export default function OpenedTaskContainer({ taskList, setTaskList }) {
   const [sortDirection, setSortDirection] = useState("asc");
   const [isOpened, setIsOpened] = useState(false);
 
+  useEffect(() => {
+    const stopwatch = setInterval(() => {
+      checkOverdueTasks();
+    }, 1000);
+    return () => clearInterval(stopwatch);
+  }, [taskList]);
+
+  function checkOverdueTasks() {
+    const currentTime = new Date();
+    let needRerender = false;
+
+    const updatedTaskList = taskList.map((task) => {
+      const timeFromTask = new Date(task.deadline);
+      if (timeFromTask < currentTime && !task.isOverdue) {
+        needRerender = true;
+        return { ...task, isOverdue: true };
+      }
+      return task;
+    });
+
+    if (needRerender) {
+      setTaskList(updatedTaskList);
+      handleSortChange(sortType, sortDirection);
+    }
+  }
+
   const handleSortChange = useCallback(
     (currentType, currentDirection) => {
       const sortFunctions = {

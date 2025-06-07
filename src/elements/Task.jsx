@@ -1,9 +1,12 @@
-export default function Task({ title, priority, deadline, id, isCompleted, setTaskList }) {
+export default function Task({ title, priority, deadline, id, isCompleted, setTaskList, isOverdue }) {
   return (
-    <li className={`task-item ${priority}`}>
+    <li className={`task-item ${priority} ${isOverdue && "overdue"}`}>
       <div className="task-info">
         <p>
-          {title} <strong>({priority})</strong>
+          {title}{" "}
+          <strong>
+            ({priority}){isOverdue && " ПРОСРОЧЕНА"}
+          </strong>
         </p>
         <p className="task-deadline">{`${isCompleted ? "Закрыта:" : "Завершить до:"} ${deadline}`}</p>
       </div>

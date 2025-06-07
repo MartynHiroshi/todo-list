@@ -29,7 +29,14 @@ function TaskForm({ taskList, setTaskList }) {
 
         setTaskList([
           ...taskList,
-          { title: `#${currentId} ${taskTitle.trim()}`, priority: taskPriority, deadline: taskDeadline, id: currentId, isCompleted: false },
+          {
+            title: `#${currentId} ${taskTitle.trim()}`,
+            priority: taskPriority,
+            deadline: taskDeadline,
+            id: currentId,
+            isCompleted: false,
+            isOverdue: false,
+          },
         ]);
 
         setTaskTitle("");
